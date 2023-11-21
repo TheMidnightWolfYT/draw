@@ -28,6 +28,7 @@
             box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-around;
+            z-index: 1; /* Ensure controls are above canvas on mobile */
         }
     </style>
     <title>Enhanced Drawing App</title>
@@ -54,7 +55,9 @@
             let drawingColor = '#000';
 
             canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('touchstart', startDrawing); // Handle touchstart
             canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchmove', draw); // Handle touchmove
             canvas.addEventListener('mouseup', stopDrawing);
             canvas.addEventListener('mouseout', stopDrawing);
 
@@ -69,14 +72,18 @@
             function draw(e) {
                 if (!isDrawing) return;
 
+                // Touch events have different properties
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+
                 context.lineWidth = brushSizeInput.value;
                 context.lineCap = 'round';
                 context.strokeStyle = drawingColor;
 
-                context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                context.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
                 context.stroke();
                 context.beginPath();
-                context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                context.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
             }
 
             function stopDrawing() {
