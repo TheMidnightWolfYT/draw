@@ -49,7 +49,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const canvas = document.getElementById('drawingCanvas');
             const context = canvas.getContext('2d');
             let isDrawing = false;
@@ -87,13 +87,21 @@
             function startDrawingTouch(e) {
                 e.preventDefault();
                 const touch = e.touches[0];
-                startDrawing(touch);
+                const rect = canvas.getBoundingClientRect();
+                startDrawing({
+                    clientX: touch.clientX - rect.left,
+                    clientY: touch.clientY - rect.top
+                });
             }
 
             function drawTouch(e) {
                 e.preventDefault();
                 const touch = e.touches[0];
-                draw(touch);
+                const rect = canvas.getBoundingClientRect();
+                draw({
+                    clientX: touch.clientX - rect.left,
+                    clientY: touch.clientY - rect.top
+                });
             }
 
             function stopDrawing() {
