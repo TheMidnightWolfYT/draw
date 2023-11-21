@@ -15,14 +15,12 @@
 
         canvas {
             border: 2px solid #000;
-            width: 100%; /* Make the canvas fill the available width */
-            height: 100%; /* Make the canvas fill the available height */
         }
     </style>
     <title>Enhanced Drawing App</title>
 </head>
 <body>
-    <canvas id="drawingCanvas"></canvas>
+    <canvas id="drawingCanvas" width="800" height="600"></canvas>
     <div id="controls">
         <label for="colorPicker">Color:</label>
         <input type="color" id="colorPicker" value="#000">
@@ -84,17 +82,6 @@
             function setEraser() {
                 drawingColor = '#fff'; // Set color to white for eraser effect
             }
-
-            function fitCanvasToScreen() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            // Call the fit function when the page loads
-            fitCanvasToScreen();
-
-            // Call the fit function whenever the window is resized
-            window.addEventListener('resize', fitCanvasToScreen);
         });
     </script>
 </body>
