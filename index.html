@@ -89,6 +89,10 @@
                 context.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
                 context.stroke();
                 context.beginPath();
+                context.arc(clientX - canvas.offsetLeft, clientY - canvas.offsetTop, context.lineWidth / 2, 0, Math.PI * 2);
+                context.fillStyle = drawingColor;
+                context.fill();
+                context.beginPath();
                 context.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
             }
 
