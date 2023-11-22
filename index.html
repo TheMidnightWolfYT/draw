@@ -77,14 +77,14 @@
                 context.lineCap = 'round';
                 context.strokeStyle = drawingColor;
 
-                context.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+                context.lineTo(clientX - canvas.getBoundingClientRect().left, clientY - canvas.getBoundingClientRect().top);
                 context.stroke();
                 context.beginPath();
-                context.arc(clientX - canvas.offsetLeft, clientY - canvas.offsetTop, context.lineWidth / 2, 0, Math.PI * 2);
+                context.arc(clientX - canvas.getBoundingClientRect().left, clientY - canvas.getBoundingClientRect().top, context.lineWidth / 2, 0, Math.PI * 2);
                 context.fillStyle = drawingColor;
                 context.fill();
                 context.beginPath();
-                context.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+                context.moveTo(clientX - canvas.getBoundingClientRect().left, clientY - canvas.getBoundingClientRect().top);
             }
 
             function stopDrawing() {
