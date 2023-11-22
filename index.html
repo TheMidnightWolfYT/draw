@@ -55,9 +55,9 @@
             let drawingColor = '#000';
 
             canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchstart', startDrawing);
             canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchmove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
             canvas.addEventListener('touchend', stopDrawing);
 
@@ -67,15 +67,6 @@
             function startDrawing(e) {
                 isDrawing = true;
                 draw(e);
-            }
-
-            function handleTouchStart(e) {
-                const touch = e.touches[0];
-                const fakeMouseEvent = new MouseEvent('mousedown', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                startDrawing(fakeMouseEvent);
             }
 
             function draw(e) {
@@ -94,15 +85,6 @@
                 context.fill();
                 context.beginPath();
                 context.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
-            }
-
-            function handleTouchMove(e) {
-                const touch = e.touches[0];
-                const fakeMouseEvent = new MouseEvent('mousemove', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                draw(fakeMouseEvent);
             }
 
             function stopDrawing() {
