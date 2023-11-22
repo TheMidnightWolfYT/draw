@@ -30,13 +30,14 @@
             margin-right: 5px;
         }
 
-        #clearButton {
+        #clearButton, #saveButton {
             margin-top: 5px;
         }
     </style>
-    <title>Enhanced Drawing App</title>
+    <title>Layered Drawing App</title>
 </head>
 <body>
+    <canvas id="backgroundCanvas" width="800" height="600"></canvas>
     <canvas id="drawingCanvas" width="800" height="600"></canvas>
     <div id="controls">
         <label for="colorPicker">Color:</label>
@@ -46,28 +47,39 @@
         <input type="range" id="brushSize" min="1" max="20" value="5">
 
         <button id="eraserButton">Eraser</button>
+        <button id="fillButton">Fill</button>
         <button id="clearButton">Clear Canvas</button>
+        <button id="saveButton">Save Image</button>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('drawingCanvas');
-            const context = canvas.getContext('2d');
+            const backgroundCanvas = document.getElementById('backgroundCanvas');
+            const backgroundContext = backgroundCanvas.getContext('2d');
+            const drawingCanvas = document.getElementById('drawingCanvas');
+            const drawingContext = drawingCanvas.getContext('2d');
+
+            // Draw a static background on the background layer
+            backgroundContext.fillStyle = '#fff'; // Set the desired background color
+            backgroundContext.fillRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+
             let isDrawing = false;
             let drawingColor = '#000'; // Default drawing color
 
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            canvas.addEventListener('touchstart', startDrawingTouch);
-            canvas.addEventListener('touchmove', drawTouch);
-            canvas.addEventListener('touchend', stopDrawing);
+            drawingCanvas.addEventListener('mousedown', startDrawing);
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', stopDrawing);
+            drawingCanvas.addEventListener('mouseout', stopDrawing);
+            drawingCanvas.addEventListener('touchstart', startDrawingTouch);
+            drawingCanvas.addEventListener('touchmove', drawTouch);
+            drawingCanvas.addEventListener('touchend', stopDrawing);
 
             const colorPicker = document.getElementById('colorPicker');
             const brushSizeInput = document.getElementById('brushSize');
             const eraserButton = document.getElementById('eraserButton');
+            const fillButton = document.getElementById('fillButton');
             const clearButton = document.getElementById('clearButton');
+            const saveButton = document.getElementById('saveButton');
 
             function startDrawing(e) {
                 isDrawing = true;
@@ -77,15 +89,21 @@
             function draw(e) {
                 if (!isDrawing) return;
 
-                context.lineWidth = brushSizeInput.value;
-                context.lineCap = 'round';
-                context.strokeStyle = drawingColor;
+                drawingContext.lineWidth = brushSizeInput.value;
+                drawingContext.lineCap = 'round';
 
-                const offsetY = 60; // Adjust this value for the desired downward offset
-                context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop + offsetY);
-                context.stroke();
-                context.beginPath();
-                context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop + offsetY);
+                if (drawingColor === '#fff') {
+                    // If eraser is selected, use a transparent color to "erase"
+                    drawingContext.strokeStyle = 'rgba(255, 255, 255, 0)';
+                } else {
+                    drawingContext.strokeStyle = drawingColor;
+                }
+
+                const offsetY = 55; // Adjust this value for the desired downward offset
+                drawingContext.lineTo(e.clientX - drawingCanvas.offsetLeft, e.clientY - drawingCanvas.offsetTop + offsetY);
+                drawingContext.stroke();
+                drawingContext.beginPath();
+                drawingContext.moveTo(e.clientX - drawingCanvas.offsetLeft, e.clientY - drawingCanvas.offsetTop + offsetY);
             }
 
             function startDrawingTouch(e) {
@@ -102,19 +120,49 @@
 
             function stopDrawing() {
                 isDrawing = false;
-                context.beginPath(); // Reset path when stopping drawing
+                drawingContext.beginPath(); // Reset path when stopping drawing
             }
 
             clearButton.addEventListener('click', clearCanvas);
 
             function clearCanvas() {
-                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
             }
 
             eraserButton.addEventListener('click', setEraser);
 
             function setEraser() {
                 drawingColor = '#fff'; // Set drawing color to white (eraser)
+            }
+
+            fillButton.addEventListener('click', fillCanvas);
+
+            function fillCanvas() {
+                // Clear the drawing layer
+                drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                // Fill the background layer with the selected color
+                backgroundContext.fillStyle = drawingColor;
+                backgroundContext.fillRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+            }
+
+            saveButton.addEventListener('click', saveImage);
+
+            function saveImage() {
+                // Combine the background and drawing layers into a single image
+                const combinedCanvas = document.createElement('canvas');
+                combinedCanvas.width = drawingCanvas.width;
+                combinedCanvas.height = drawingCanvas.height;
+                const combinedContext = combinedCanvas.getContext('2d');
+                // Draw the background layer
+                combinedContext.drawImage(backgroundCanvas, 0, 0);
+                // Draw the drawing layer
+                combinedContext.drawImage(drawingCanvas, 0, 0);
+                // Save the combined image
+                const dataURL = combinedCanvas.toDataURL();
+                const a = document.createElement('a');
+                a.href = dataURL;
+                a.download = 'layered_image.png';
+                a.click();
             }
         });
     </script>
