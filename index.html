@@ -41,7 +41,7 @@
     <canvas id="drawingCanvas" width="800" height="600"></canvas>
     <div id="controls">
         <label for="colorPicker">Color:</label>
-        <input type="color" id="colorPicker" value="#000">
+        <input type="color" id="colorPicker" value="#000000">
         
         <label for="brushSize">Brush Size:</label>
         <input type="range" id="brushSize" min="1" max="20" value="5">
@@ -64,7 +64,7 @@
             backgroundContext.fillRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
 
             let isDrawing = false;
-            let drawingColor = '#000'; // Default drawing color
+            let drawingColor = '#000000'; // Default drawing color
 
             drawingCanvas.addEventListener('mousedown', startDrawing);
             drawingCanvas.addEventListener('mousemove', draw);
