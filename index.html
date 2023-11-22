@@ -8,6 +8,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
@@ -15,26 +16,28 @@
 
         canvas {
             border: 2px solid #000;
-            width: 100%;
-            flex: 1;
+            cursor: crosshair;
         }
 
         #controls {
-            position: fixed;
-            bottom: 0;
-            background-color: white;
-            width: 100%;
-            padding: 10px;
-            box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-around;
-            z-index: 1;
+        }
+
+        #controls label {
+            margin-right: 5px;
+        }
+
+        #clearButton {
+            margin-top: 5px;
         }
     </style>
     <title>Enhanced Drawing App</title>
 </head>
 <body>
-    <canvas id="drawingCanvas"></canvas>
+    <canvas id="drawingCanvas" width="800" height="600"></canvas>
     <div id="controls">
         <label for="colorPicker">Color:</label>
         <input type="color" id="colorPicker" value="#000">
@@ -42,9 +45,8 @@
         <label for="brushSize">Brush Size:</label>
         <input type="range" id="brushSize" min="1" max="20" value="5">
 
-        <button onclick="setDrawingColor()">Set Drawing Color</button>
-        <button onclick="setEraser()">Eraser</button>
-        <button onclick="clearCanvas()">Clear Canvas</button>
+        <button id="eraserButton">Eraser</button>
+        <button id="clearButton">Clear Canvas</button>
     </div>
 
     <script>
@@ -52,63 +54,65 @@
             const canvas = document.getElementById('drawingCanvas');
             const context = canvas.getContext('2d');
             let isDrawing = false;
-            let drawingColor = '#000';
 
             canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('touchstart', startDrawing);
             canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('touchmove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            canvas.addEventListener('touchstart', startDrawingTouch);
+            canvas.addEventListener('touchmove', drawTouch);
             canvas.addEventListener('touchend', stopDrawing);
 
             const colorPicker = document.getElementById('colorPicker');
             const brushSizeInput = document.getElementById('brushSize');
+            const eraserButton = document.getElementById('eraserButton');
+            const clearButton = document.getElementById('clearButton');
 
             function startDrawing(e) {
                 isDrawing = true;
-                draw(e);
+                draw(e); // Start drawing from the current position
             }
 
             function draw(e) {
                 if (!isDrawing) return;
-                const { clientX, clientY } = getMousePosition(e);
 
                 context.lineWidth = brushSizeInput.value;
                 context.lineCap = 'round';
-                context.strokeStyle = drawingColor;
+                context.strokeStyle = colorPicker.value;
 
-                context.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+                context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
                 context.stroke();
                 context.beginPath();
-                context.arc(clientX - canvas.offsetLeft, clientY - canvas.offsetTop, context.lineWidth / 2, 0, Math.PI * 2);
-                context.fillStyle = drawingColor;
-                context.fill();
-                context.beginPath();
-                context.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+                context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            }
+
+            function startDrawingTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrawing(touch);
+            }
+
+            function drawTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                draw(touch);
             }
 
             function stopDrawing() {
                 isDrawing = false;
-                context.beginPath();
+                context.beginPath(); // Reset path when stopping drawing
             }
+
+            clearButton.addEventListener('click', clearCanvas);
 
             function clearCanvas() {
                 context.clearRect(0, 0, canvas.width, canvas.height);
             }
 
-            function setDrawingColor() {
-                drawingColor = colorPicker.value;
-            }
+            eraserButton.addEventListener('click', setEraser);
 
             function setEraser() {
-                drawingColor = '#fff';
-            }
-
-            function getMousePosition(e) {
-                if (e.touches && e.touches[0]) {
-                    return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
-                }
-                return { clientX: e.clientX, clientY: e.clientY };
+                colorPicker.value = '#fff'; // Set drawing color to white (eraser)
             }
         });
     </script>
