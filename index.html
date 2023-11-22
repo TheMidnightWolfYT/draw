@@ -81,7 +81,7 @@
                 context.lineCap = 'round';
                 context.strokeStyle = drawingColor;
 
-                const offsetY = 10; // Adjust this value for the desired downward offset
+                const offsetY = 30; // Adjust this value for the desired downward offset
                 context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop + offsetY);
                 context.stroke();
                 context.beginPath();
