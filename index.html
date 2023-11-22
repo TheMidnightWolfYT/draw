@@ -54,6 +54,7 @@
             const canvas = document.getElementById('drawingCanvas');
             const context = canvas.getContext('2d');
             let isDrawing = false;
+            let drawingColor = '#000'; // Default drawing color
 
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
@@ -78,12 +79,13 @@
 
                 context.lineWidth = brushSizeInput.value;
                 context.lineCap = 'round';
-                context.strokeStyle = colorPicker.value;
+                context.strokeStyle = drawingColor;
 
-                context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                const offsetY = 10; // Adjust this value for the desired downward offset
+                context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop + offsetY);
                 context.stroke();
                 context.beginPath();
-                context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop + offsetY);
             }
 
             function startDrawingTouch(e) {
@@ -112,7 +114,7 @@
             eraserButton.addEventListener('click', setEraser);
 
             function setEraser() {
-                colorPicker.value = '#fff'; // Set drawing color to white (eraser)
+                drawingColor = '#fff'; // Set drawing color to white (eraser)
             }
         });
     </script>
